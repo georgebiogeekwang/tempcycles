@@ -1,0 +1,8 @@
+Package: tempcycles
+Title: For estimating magnitudes and biological impacts of temperature cycling.
+Version: 0.0.0.9000
+Authors@R: person("George", "Wang", email = "biogeek@gmail.com", role = c("aut", "cre"))
+Description: This package collects tools, methods, and data from Wang and Dillon2014, Nature Climate Change 4, 988-992. Custom functions have been replaced with tools available from other packages as they become available, so in some ways this has become a metapackage of current tools.
+Depends: R (>= 3.2.2)
+License: GPL-2
+LazyData: true
