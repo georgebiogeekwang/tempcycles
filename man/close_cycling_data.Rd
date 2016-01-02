@@ -5,7 +5,8 @@
 \title{Find closest data from Wang and Dillon 2014 to a specified location within a
 time interval.}
 \usage{
-close_cycling_data(samp_coords, samp_interval = NULL, ...)
+close_cycling_data(samp_coords = stop("Sample coords c(lon,lat) required."),
+  samp_interval = NULL, ...)
 }
 \arguments{
 \item{samp_coords}{The \code{cbind(lon, lat)} of the search origin, in

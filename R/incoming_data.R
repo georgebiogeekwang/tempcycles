@@ -13,7 +13,7 @@
 #' @export
 #' @examples
 #' mmddyyyy_to_numeric(c("3/5/1954", "9/28/2012"))
-mmddyyyy_to_numeric <- function(mmddyyyy_dates){
+mmddyyyy_to_numeric <- function(mmddyyyy_dates = stop("Char dates mm/dd/yyyy rqrd.")) {
   if (class(mmddyyyy_dates) != "character") {
     mmddyyyy_dates <- as.character(mmddyyyy_dates)
   }
@@ -23,7 +23,7 @@ mmddyyyy_to_numeric <- function(mmddyyyy_dates){
               function(X) c(X, rep(NA, 3 - length(X))))
   mdy_df <- data.frame(t(do.call(cbind, l)))
   names(mdy_df) <- c("m", "d", "y")
-  mdy_df$m <- as.numeric(levels(mdy_df$m))[mdy_df$m]    #values were converted to factors
+  mdy_df$m <- as.numeric(levels(mdy_df$m))[mdy_df$m] #values were converted to factors
   mdy_df$d <- as.numeric(levels(mdy_df$d))[mdy_df$d]
   mdy_df$y <- as.numeric(levels(mdy_df$y))[mdy_df$y]
   jday <- date::mdy.date(mdy_df$m,
@@ -48,7 +48,7 @@ mmddyyyy_to_numeric <- function(mmddyyyy_dates){
 #' @export
 #' @examples
 #' yyyymmdd_to_numeric(c("1954-3-5", "2012-9-28"))
-yyyymmdd_to_numeric <- function(yyyymmdd_dates){
+yyyymmdd_to_numeric <- function(yyyymmdd_dates = stop("Char dates yyyy-mm-dd rqrd.")) {
   if (class(yyyymmdd_dates) != "character") {
     yyyymmdd_dates <- as.character(yyyymmdd_dates)
   }
@@ -58,7 +58,7 @@ yyyymmdd_to_numeric <- function(yyyymmdd_dates){
               function(X) c(X, rep(NA, 3 - length(X))))
   mdy_df <- data.frame(t(do.call(cbind, l)))
   names(mdy_df) <- c("y", "m", "d")
-  mdy_df$m <- as.numeric(levels(mdy_df$m))[mdy_df$m]    #values were converted to factors
+  mdy_df$m <- as.numeric(levels(mdy_df$m))[mdy_df$m] #values were converted to factors
   mdy_df$d <- as.numeric(levels(mdy_df$d))[mdy_df$d]
   mdy_df$y <- as.numeric(levels(mdy_df$y))[mdy_df$y]
   jday <- date::mdy.date(mdy_df$m,
@@ -85,12 +85,12 @@ yyyymmdd_to_numeric <- function(yyyymmdd_dates){
 #' @export
 #' @examples
 #' require(tempcyclesdata)
-#' close_stations(sample_coords = cbind(9.0556, 48.52),
+#' close_stations(sample_coords = c(9.0556, 48.52),
 #'                station_data = tempcyclesdata,
 #'                radius = 100,
 #'                n      = 20)
-close_stations <- function(sample_coords,
-                           station_data,
+close_stations <- function(sample_coords = stop("Sample coords c(lon,lat) required."),
+                           station_data = stop("Station data with lon, lat cols rqrd."),
                            radius = NULL,
                            n      = 10) {
   #calculate distances in km
@@ -135,7 +135,7 @@ close_stations <- function(sample_coords,
 #'                    samp_interval = c("1/1/1998", "4/7/2007"),
 #'                    radius = 50,
 #'                    n = 2)
-close_cycling_data <- function(samp_coords,
+close_cycling_data <- function(samp_coords = stop("Sample coords c(lon,lat) required."),
                                samp_interval = NULL,
                                ...) {
   if (!is.null(samp_interval)) {
@@ -182,7 +182,7 @@ close_cycling_data <- function(samp_coords,
 #'                    samp_interval = c("1/1/1998", "4/7/2007"),
 #'                    radius = 50,
 #'                    n = 2)
-close_noaaisd_data <- function(samp_coords,
+close_noaaisd_data <- function(samp_coords = stop("Sample coords c(lon,lat) required."),
                                samp_interval = NULL,
                                ...) {
   station_list <- rnoaa::isd_stations()
@@ -226,8 +226,8 @@ close_noaaisd_data <- function(samp_coords,
 #' get_noaaisd_data(usaf = "702700",
 #'                  wban = "00489",
 #'                  years = c(2009,2013:2015))
-get_noaaisd_data <- function(usaf,
-                             wban,
+get_noaaisd_data <- function(usaf = stop("6-digit char USAF id required."),
+                             wban = stop("5-digit char WBAN id required."),
                              years = NULL) {
   if (is.null(years)) {
     station_list <- rnoaa::isd_stations()
@@ -248,10 +248,12 @@ get_noaaisd_data <- function(usaf,
       rnoaa::isd(usaf = usaf,
                  wban = wban,
                  year = year),
-      error = function(e) { warning(paste(year, " not found for ", usaf, "-", wban, sep = ""))
+      error = function(e) {
+        warning(paste(year, " not found for ", usaf, "-", wban, sep = ""))
       } )
     if(is.character(station_data_year)) {next}
-    year_data <- data.frame(jday        = yyyymmdd_to_numeric(station_data_year[[1]]$date) + ((as.numeric(station_data_year[[1]]$time) / 100) / 24),
+    year_data <- data.frame(jday = yyyymmdd_to_numeric(station_data_year[[1]]$date) +
+                                  ((as.numeric(station_data_year[[1]]$time) / 100) / 24),
                             temperature = station_data_year[[1]]$temperature,
                             quality     = station_data_year[[1]]$temperature_quality)
     year_data <- subset(year_data,

@@ -4,7 +4,7 @@
 \alias{yyyymmdd_to_numeric}
 \title{yyyy-mm-dd to julian date helper function}
 \usage{
-yyyymmdd_to_numeric(yyyymmdd_dates)
+yyyymmdd_to_numeric(yyyymmdd_dates = stop("Char dates yyyy-mm-dd rqrd."))
 }
 \arguments{
 \item{yyyymmdd_dates}{a vector of dates in "yyyy-mm-dd" format.}

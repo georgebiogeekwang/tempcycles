@@ -4,7 +4,9 @@
 \alias{close_stations}
 \title{Find weather stations that are close to a specified location.}
 \usage{
-close_stations(sample_coords, station_data, radius = NULL, n = 10)
+close_stations(sample_coords = stop("Sample coords c(lon,lat) required."),
+  station_data = stop("Station data with lon, lat cols rqrd."),
+  radius = NULL, n = 10)
 }
 \arguments{
 \item{sample_coords}{The \code{cbind(lon, lat)} of the experiment, in decimal
@@ -28,7 +30,7 @@ data frame will be returned.
 }
 \examples{
 require(tempcyclesdata)
-close_stations(sample_coords = cbind(9.0556, 48.52),
+close_stations(sample_coords = c(9.0556, 48.52),
                station_data = tempcyclesdata,
                radius = 100,
                n      = 20)

@@ -4,7 +4,8 @@
 \alias{close_noaaisd_data}
 \title{Find closest data from the NOAA ISD dataset to a specified location and time.}
 \usage{
-close_noaaisd_data(samp_coords, samp_interval = NULL, ...)
+close_noaaisd_data(samp_coords = stop("Sample coords c(lon,lat) required."),
+  samp_interval = NULL, ...)
 }
 \arguments{
 \item{samp_coords}{The \code{cbind(lon, lat)} of the search origin, in decimal

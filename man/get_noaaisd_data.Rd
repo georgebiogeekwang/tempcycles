@@ -4,7 +4,8 @@
 \alias{get_noaaisd_data}
 \title{Download and temperature data NOAA ISD and format for spectral analysis.}
 \usage{
-get_noaaisd_data(usaf, wban, years = NULL)
+get_noaaisd_data(usaf = stop("6-digit char USAF id required."),
+  wban = stop("5-digit char WBAN id required."), years = NULL)
 }
 \arguments{
 \item{usaf}{A string of the USAF weather station identifier.}

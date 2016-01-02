@@ -4,7 +4,7 @@
 \alias{mmddyyyy_to_numeric}
 \title{mm/dd/yyyy to julian date helper function}
 \usage{
-mmddyyyy_to_numeric(mmddyyyy_dates)
+mmddyyyy_to_numeric(mmddyyyy_dates = stop("Char dates mm/dd/yyyy rqrd."))
 }
 \arguments{
 \item{mmddyyyy_dates}{a vector of dates in "mm/dd/yyyy" format.}
