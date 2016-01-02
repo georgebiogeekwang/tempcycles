@@ -103,7 +103,7 @@ close_stations <- function(sample_coords = stop("Sample coords c(lon,lat) requir
   if (!is.null(radius)) {
     within_radius <- which(station_data$distance <= radius)
     if (length(within_radius) == 0) {
-      stop(paste("No stations within", radius, "km."))
+      stop(paste("No stations within", radius, "km. Try increasing search radius."))
     }
     station_data <- station_data[within_radius,]
   }
