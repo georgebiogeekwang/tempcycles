@@ -186,7 +186,10 @@ close_noaaisd_data <- function(samp_coords = stop("Sample coords c(lon,lat) requ
                                samp_interval = NULL,
                                ...) {
   station_list <- rnoaa::isd_stations()
+  station_list <- station_list[-(grep("BOGUS",
+                                      station_list$station_name)),]
   station_list <- station_list[complete.cases(station_list$lat, station_list$lon),]
+  station_list <- station_list[-(which(station_list$lon < -180)),]
   if (!is.null(samp_interval)) {
     samp_interval <- lubridate::mdy(samp_interval)
     samp_interval <- lubridate::interval(samp_interval[1],
@@ -269,3 +272,18 @@ get_noaaisd_data <- function(usaf = stop("6-digit char USAF id required."),
   return(station_data)
 }
 
+#' Preliminary checks for temperature records.
+#'
+#'
+#'
+#' @param usaf A string of the USAF weather station identifier.
+#' @param wban A string of the WBAN weather station identifier.
+#' @return A data frame with \code{jday} and \code{temperature}.
+#' @export
+#' @examples
+#' get_noaaisd_data(usaf = "702700",
+#'                  wban = "00489",
+#'                  years = c(2009,2013:2015))
+prelim_record_check <- function(){
+
+}
