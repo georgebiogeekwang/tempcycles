@@ -4,22 +4,27 @@
 \alias{prelim_record_check}
 \title{Preliminary checks for temperature records.}
 \usage{
-prelim_record_check()
+prelim_record_check(record_time)
 }
 \arguments{
-\item{usaf}{A string of the USAF weather station identifier.}
-
-\item{wban}{A string of the WBAN weather station identifier.}
+\item{record_time}{A time vector, in fractional julian date.}
 }
 \value{
-A data frame with \code{jday} and \code{temperature}.
+A logical data frame with check values.
 }
 \description{
-Preliminary checks for temperature records.
+Check if a weather record is suitable for spectral analysis. Checks are based
+on sampling: records must sample at least every six hours on average, be at
+least 1.5 years in length, and not have a single gap more than ten percent of
+the record length. As suggested by the function name, these checks are
+preliminary. The significance of the peaks should also be measured, either by
+comparison to a white noise model, as in \pkg{nlts}, or against Monte Carlo
+or Chi-square AR1 levels as in redfit, available in \pkg{dplR}.
 }
 \examples{
-get_noaaisd_data(usaf = "702700",
-                 wban = "00489",
-                 years = c(2009,2013:2015))
+weather_record <- get_noaaisd_data(usaf = "702700",
+                                   wban = "00489",
+                                   years = 2014:2015)
+prelim_record_check(weather_record$jday)
 }
 

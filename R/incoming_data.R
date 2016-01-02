@@ -274,16 +274,36 @@ get_noaaisd_data <- function(usaf = stop("6-digit char USAF id required."),
 
 #' Preliminary checks for temperature records.
 #'
+#' Check if a weather record is suitable for spectral analysis. Checks are based
+#' on sampling: records must sample at least every six hours on average, be at
+#' least 1.5 years in length, and not have a single gap more than ten percent of
+#' the record length. As suggested by the function name, these checks are
+#' preliminary. The significance of the peaks should also be measured, either by
+#' comparison to a white noise model, as in \pkg{nlts}, or against Monte Carlo
+#' or Chi-square AR1 levels as in redfit, available in \pkg{dplR}.
 #'
-#'
-#' @param usaf A string of the USAF weather station identifier.
-#' @param wban A string of the WBAN weather station identifier.
-#' @return A data frame with \code{jday} and \code{temperature}.
+#' @param record_time A time vector, in fractional julian date.
+#' @return A logical data frame with check values.
 #' @export
 #' @examples
-#' get_noaaisd_data(usaf = "702700",
-#'                  wban = "00489",
-#'                  years = c(2009,2013:2015))
-prelim_record_check <- function(){
-
+#' weather_record <- get_noaaisd_data(usaf = "702700",
+#'                                    wban = "00489",
+#'                                    years = 2014:2015)
+#' prelim_record_check(weather_record$jday)
+prelim_record_check <- function(record_time) {
+  data_checks <- data.frame(c_mean_diff_lt_6h             = FALSE,
+                            c_at_least_one_and_half_years = FALSE,
+                            c_no_big_gap                  = FALSE)
+  diffvec       <- diff(record_time)
+  record_length <- max(record_time) - min(record_time)
+  if (mean(diffvec < 0.25)) {
+    data_checks$c_mean_diff_lt_6h <- TRUE
+  }
+  if (record_length > (365 * 1.5)) {
+    data_checks$c_at_least_one_and_half_years <- TRUE
+  }
+  if (max(diffvec) < (0.1 * record_length)) {
+    data_checks$c_no_big_gap <- TRUE
+  }
+  return(data_checks)
 }
