@@ -1,18 +1,22 @@
 Package: tempcycles
-Title: Estimating Magnitudes and Biological Impacts of Temperature Cycling.
-Version: 0.0.0.9000
+Title: Estimating Magnitudes and Biological Impacts of Temperature Cycling
+Version: 1.0.0
 Authors@R: person("George", "Wang", email = "biogeek@gmail.com", role = c("aut", "cre"))
-Description: This package collects tools and methods from Wang and
-    Dillon 2014, Nature Climate Change 4, 988-992. Custom functions have been
-    replaced with tools available from other packages as they become
-    available, so in some ways this has become a metapackage of current tools.
-Depends: R (>= 3.2.2)
+Description: This package provides tools for spectral analysis of temperature
+    records. collects tools and methods from from Wang and Dillon 2014, Nature
+    Climate Change 4, 988-992. Additionally, it provides tools to obtain and
+    preprocess temperature records close to a geographic location, and generate
+    test signals from spectral data. Custom functions have been replaced with tools
+    available from other packages as they become available, so in some ways this has
+    become a metapackage of current tools.
+Depends:
+    R (>= 3.2.2)
 License: GPL-2
 LazyData: true
 Imports:
     date,
-    dplR,
     geosphere,
     lubridate,
     rnoaa,
     tempcyclesdata
+RoxygenNote: 5.0.1

@@ -1,21 +1,23 @@
 #' mm/dd/yyyy to julian date helper function
 #'
-#' The \code{rnoaa} returns dates in the station list in mm/dd/yyyy format, and
-#' we (Wang & Dillon) formatted our dates in a similar way. All date and
-#' spectral calculations work on multi-year Julian dates. This is a small helper
-#' function to convert from mm/dd/yyyy to jdate. Because it uses \code{mdy.date}
-#' from the \code{date} package, it returns the number of days since January 1,
-#' 1960. Inputs are coerced to character if necessary.
-#' @param mdy a vector of dates in "mm/dd/yyyy" format.
+#' The \pkg{rnoaa} package returns dates in the station list in "mm/dd/yyyy"
+#' format, and we (Wang & Dillon) formatted our dates in a similar way. All date
+#' and spectral calculations work on multi-year Julian dates. This is a small
+#' helper function to convert from "mm/dd/yyyy" to julian day. Because it uses
+#' \code{mdy.date()} from the \pkg{date} package, it returns the number of days
+#' since January 1, 1960. Inputs are coerced to character if necessary.
+#'
+#' @param mmddyyyy_dates a vector of dates in "mm/dd/yyyy" format.
 #' @return a numeric vector of the number of days since 1/1/1960, dates before
 #'   this are negative.
+#' @export
 #' @examples
 #' mmddyyyy_to_numeric(c("3/5/1954", "9/28/2012"))
-mmddyyyy_to_numeric <- function(stringdates){
-  if (class(stringdates) != "character") {
-    stringdates <- as.character(stringdates)
+mmddyyyy_to_numeric <- function(mmddyyyy_dates){
+  if (class(mmddyyyy_dates) != "character") {
+    mmddyyyy_dates <- as.character(mmddyyyy_dates)
   }
-  splitdates <- strsplit(stringdates,
+  splitdates <- strsplit(mmddyyyy_dates,
                          "/")
   l <- lapply(splitdates,
               function(X) c(X, rep(NA, 3 - length(X))))
@@ -33,21 +35,24 @@ mmddyyyy_to_numeric <- function(stringdates){
 
 #' yyyy-mm-dd to julian date helper function
 #'
-#' The \code{rnoaa} returns dates for weather station records in mm/dd/yyyy
-#' format. All date and spectral calculations work on multi-year Julian dates.
-#' This is a small helper function to convert from yyyy-mm-dd to jdate. Because
-#' it uses \code{mdy.date} from the \code{date} package, it returns the number
-#' of days since January 1, 1960. Inputs are coerced to character if necessary.
-#' @param ymd a vector of dates in "yyyy-mm-dd" format.
+#' The \pkg{rnoaa} package returns dates for weather station records in
+#' "yyyy-mm-dd" format. All date and spectral calculations work on multi-year
+#' Julian dates. This is a small helper function to convert from "yyyy-mm-dd" to
+#' julian day. Because it uses \code{mdy.date()} from the \pkg{date} package, it
+#' returns the number of days since January 1, 1960. Inputs are coerced to
+#' character if necessary.
+#'
+#' @param yyyymmdd_dates a vector of dates in "yyyy-mm-dd" format.
 #' @return a numeric vector of the number of days since 1/1/1960, dates before
 #'   this are negative.
+#' @export
 #' @examples
-#' yyyymmdd_to_numeric(c("3/5/1954", "9/28/2012"))
-yyyymmdd_to_numeric <- function(stringdates){
-  if (class(stringdates) != "character") {
-    stringdates <- as.character(stringdates)
+#' yyyymmdd_to_numeric(c("1954-3-5", "2012-9-28"))
+yyyymmdd_to_numeric <- function(yyyymmdd_dates){
+  if (class(yyyymmdd_dates) != "character") {
+    yyyymmdd_dates <- as.character(yyyymmdd_dates)
   }
-  splitdates <- strsplit(stringdates,
+  splitdates <- strsplit(yyyymmdd_dates,
                          "-")
   l <- lapply(splitdates,
               function(X) c(X, rep(NA, 3 - length(X))))
@@ -67,7 +72,7 @@ yyyymmdd_to_numeric <- function(stringdates){
 #'
 #' This is the underlying distance function for finding close weather records.
 #' If neither \code{radius} or \code{n} is specified, the entire station_data
-#' dataframe will be returned.
+#' data frame will be returned.
 #'
 #' @param sample_coords The \code{cbind(lon, lat)} of the experiment, in decimal
 #'   degrees, negative south and west.
@@ -75,12 +80,13 @@ yyyymmdd_to_numeric <- function(stringdates){
 #'   \code{lon, lat} columns, in decimal degrees, negative south and west.
 #' @param radius The search limit in km. Default: no limit.
 #' @param n The number of stations to return. Default: no limit.
-#' @return A subset of the original station_data dataframe, with an additional
+#' @return A subset of the original station_data data frame, with an additional
 #'   \code{distance} column (km), sorted by distance.
+#' @export
 #' @examples
 #' require(tempcyclesdata)
-#' close_stations(cbind(9.0556, 48.52),
-#'                tempcyclesdata,
+#' close_stations(sample_coords = cbind(9.0556, 48.52),
+#'                station_data = tempcyclesdata,
 #'                radius = 100,
 #'                n      = 20)
 close_stations <- function(sample_coords,
@@ -110,19 +116,25 @@ close_stations <- function(sample_coords,
   return(station_data)
 }
 
-#' Find closest data from Wang & Dillon 2014 to a specified location and time.
+#' Find closest data from Wang and Dillon 2014 to a specified location within a
+#' time interval.
 #'
-#' Search through the Wang & Dillon cycling dataset, and find the closest
+#' Search through the Wang and Dillon cycling dataset, and find the closest
 #' stations to a specified sample site.
-#' @param samp_coords The \code{cbind(lon, lat)} of the search origin, in decimal
-#'   degrees, negative south and west.
+#' @param samp_coords The \code{cbind(lon, lat)} of the search origin, in
+#'   decimal degrees, negative south and west.
 #' @param samp_interval Period over which to search for data \code{c(start,end),
 #'   "mm/dd/yyyy"}. Default returns all.
 #' @param ... additional parameters to limit search (see \code{close_stations}).
 #' @return a subset of the cycling data, with and additional column of distance
-#'   from sample.
+#'   from sample, sorted by distance to the specified location.
+#' @seealso \code{\link{close_stations}} for constraining search.
+#' @export
 #' @examples
-#' close_cycling_data(c(9.0556, 48.52), c("1/1/1998", "4/7/2007"), radius = 50, n = 2)
+#' close_cycling_data(samp_coords = c(9.0556, 48.52),
+#'                    samp_interval = c("1/1/1998", "4/7/2007"),
+#'                    radius = 50,
+#'                    n = 2)
 close_cycling_data <- function(samp_coords,
                                samp_interval = NULL,
                                ...) {
@@ -155,6 +167,7 @@ close_cycling_data <- function(samp_coords,
 #'
 #' Search through the Wang & Dillon cycling dataset, and find the closest
 #' stations to a specified sample site.
+#'
 #' @param samp_coords The \code{cbind(lon, lat)} of the search origin, in decimal
 #'   degrees, negative south and west.
 #' @param samp_interval Period over which to search for data \code{c(start,end),
@@ -162,8 +175,13 @@ close_cycling_data <- function(samp_coords,
 #' @param ... additional parameters to limit search (see \code{close_stations}).
 #' @return a data frame with \code{usaf} and \code{wban} identifiers for use
 #'   with \code{get_noaaisd_data}.
+#' @seealso \code{\link{close_stations}} for constraining search.
+#' @export
 #' @examples
-#' close_noaaisd_data(c(9.0556, 48.52), c("1/1/1998", "4/7/2007"), radius = 50, n = 2)
+#' close_noaaisd_data(samp_coords = c(9.0556, 48.52),
+#'                    samp_interval = c("1/1/1998", "4/7/2007"),
+#'                    radius = 50,
+#'                    n = 2)
 close_noaaisd_data <- function(samp_coords,
                                samp_interval = NULL,
                                ...) {
@@ -197,13 +215,17 @@ close_noaaisd_data <- function(samp_coords,
 #' convert to julian day, and concatenate into a single data frame. Temperature
 #' values > 900 are error marks and are removed. Only values which pass all
 #' quality control tests, (quality code "1"), are retained.
+#'
 #' @param usaf A string of the USAF weather station identifier.
 #' @param wban A string of the WBAN weather station identifier.
 #' @param years A vector of years to download. Default returns all, missing data
 #'   results in a warning.
 #' @return A data frame with \code{jday} and \code{temperature}.
+#' @export
 #' @examples
-#' get_noaaisd_data(, c("1/1/1998", "4/7/2007"), radius = 50, n = 2)
+#' get_noaaisd_data(usaf = "702700",
+#'                  wban = "00489",
+#'                  years = c(2009,2013:2015))
 get_noaaisd_data <- function(usaf,
                              wban,
                              years = NULL) {
@@ -233,7 +255,7 @@ get_noaaisd_data <- function(usaf,
                             temperature = station_data_year[[1]]$temperature,
                             quality     = station_data_year[[1]]$temperature_quality)
     year_data <- subset(year_data,
-                        temperature < 900 & quality == "1")
+                        year_data$temperature < 900 & year_data$quality == "1")
     year_data$quality <- NULL
     if (exists("station_data")) {
       station_data <- rbind(station_data,
@@ -244,3 +266,4 @@ get_noaaisd_data <- function(usaf,
   }
   return(station_data)
 }
+
