@@ -280,7 +280,9 @@ get_noaaisd_data <- function(usaf = stop("6-digit char USAF id required."),
 #' the record length. As suggested by the function name, these checks are
 #' preliminary. The significance of the peaks should also be measured, either by
 #' comparison to a white noise model, as in \pkg{nlts}, or against Monte Carlo
-#' or Chi-square AR1 levels as in redfit, available in \pkg{dplR}.
+#' or Chi-square AR1 levels as in redfit, available in \pkg{dplR}. Most weather
+#' records that pass these checks and are not seasonally sampled will have
+#' significant DTC and ATC values.
 #'
 #' @param record_time A time vector, in fractional julian date.
 #' @return A logical data frame with check values.
