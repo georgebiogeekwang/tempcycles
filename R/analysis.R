@@ -21,7 +21,7 @@
 #' @export
 #' @examples
 #' gen_cycling_rec(years = 3,
-#'                 spectrum = data.frame(frequency = c(1, 365.25)
+#'                 spectrum = data.frame(frequency = c(1, 1 / 365)
 #'                                       cyc_range = c(0.25, )))
 gen_cycling_rec <- function(timebase   = NULL,
                             years      = NULL,
@@ -29,7 +29,7 @@ gen_cycling_rec <- function(timebase   = NULL,
                             mean       = 0,
                             t_int      = NULL,
                             t_slope    = NULL,
-                            mean_resid = 0) {
+                            mean_resid = NULL) {
   if (is.null(timebase)) {
     if (is.null(years)) {stop("Either timebase or years must be supplied")}
     timebase = (1:(years * 365 * 24)) / 24
@@ -42,15 +42,18 @@ gen_cycling_rec <- function(timebase   = NULL,
     temperatures <- temperatures + ((t_slope * timebase) + t_intercept)
   }
   #loop through adding frequencies.
-  for (i in 1:dim(spectrum)[1]) {#Note: looped to save memory, a vectorized version could be big.
-    temperatures <- temperatures + ((spectrum$cyc_range[i] / 2) *
-                                      cos(2 * pi * spectrum$frequency[i]) *
+  for (i in 1:dim(spectrum)[1]) {     #Note: looped to save memory
+    temperatures <- temperatures + (spectrum$cyc_range[i] *
+                                      cos(2 * pi * spectrum$frequency[i] *
                                       (timebase - spectrum$tau[i]) +
-                                      spectrum$phase[i])
+                                      spectrum$phase[i]))
   }
   #add residuals
-  temperatures <- temperatures + rnorm(length(temperatures),
-                                       mean = mean_resid,
-                                       sd   = 1)
-  return(temperatures)
+  if (!is.null(mean_resid)) {
+    temperatures <- temperatures + rnorm(length(temperatures),
+                                         mean = mean_resid,
+                                         sd   = 1)
+  }
+  return(data.frame(jday        = timebase,
+                    temperature = temperatures))
 }
