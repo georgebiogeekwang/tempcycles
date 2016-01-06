@@ -83,3 +83,84 @@ gen_cycling_rec <- function(timebase   = NULL,
   return(data.frame(jday        = timebase,
                     temperature = temperatures))
 }
+
+#' Lomb Scargle periodogram, with phase.
+#'
+#' Determine the periodogram of a time series using the Lomg and Scargle
+#' least-square method, also return phase. This is derived from an old version
+#' from the \pkg{nlts} package.
+#' Warning: This is memory intensive and slow if
+#' the entire spectrum is calculated, especially if it is more than 10 years,
+#' and sampling is every 4 hours or more frequent.
+#'
+#' @param temperature A vector of temperature values.
+#' @param timebase A vector of decimal Julian days. (ex: 6AM, 31s day: 31.25)
+#' @param freq A vector of frequencies to test. Set to NULL for full spectrum.
+#' @return A "lomb" object with temperature cycling (2 * amplitude) value,
+#'   freqency, phase, p (white noise), and tau (lag).
+#' @export
+#' @examples
+#' tropical_spectrum <- data.frame(frequency = c(1, 1 / 365),
+#'                                 cyc_range = c(6.53, 4.1),
+#'                                 phase     = c(0.421,0.189),
+#'                                 tau       = c(0,0))
+#'                                 tropical_mean <- 25.845
+#' tropical_ts   <- gen_cycling_rec(years    = 2,
+#'                                 spectrum = tropical_spectrum,
+#'                                mean     = tropical_mean)
+#'  tropical_lomb <- spec_lomb_phase(tropical$temperature,
+#'                                  tropical$jday)
+#'  tropical_lomb
+spec_lomb_phase <- function (temperature = stop("Temperatures missing"),
+                             timebase    = stop("Julian days missing"),
+                             freq = c(1, 1 / 365.25)) {
+  if (is.null(freq)) {
+    nyear <- max(timebase) - min(timebase) + 1
+    f <- seq(0, 0.5, length = nyear / 2)
+  }
+  else {
+    f <- freq
+  }
+  if (length(temperature) != length(timebase))
+    stop("temperature and timebase different lengths")
+  if (min(f) < 0 || max(f) > 1)
+    stop("freq must be between 0 and 1")
+  if (min(f) == 0)
+    f               <- f[f > 0]
+  nt              <- length(timebase)
+  nf              <- length(f)
+  #from Horne and Baliunas 1986
+  number.ind.freq <- -6.362 + (1.193*nt) + (0.00098*nt)^2
+  ones.t          <- rep(1, nt)
+  ones.f          <- rep(1, nf)
+  omega           <- 2 * pi * f
+  hbar            <- mean(temperature)
+  hvar            <- var(temperature)
+  hdev            <- temperature - hbar
+  two.omega.t     <- 2 * omega %*% t(timebase)
+  sum.sin         <- sin(two.omega.t) %*% ones.t
+  sum.cos         <- cos(two.omega.t) %*% ones.t
+  tau             <- atan(sum.sin/sum.cos) / (2 * omega)
+  t.m.tau         <- (ones.f %*% t(timebase)) - (tau %*% t(ones.t))
+  omega.ttau      <- (omega %*% t(ones.t)) * t.m.tau
+  sin.ott         <- sin(omega.ttau)
+  cos.ott         <- cos(omega.ttau)
+  z               <- ((cos.ott %*% hdev)^2 / ((cos.ott^2) %*% ones.t) + (sin.ott %*% hdev)^2 / ((sin.ott^2) %*% ones.t)) / (2 * hvar)
+  max             <- z == max(z,
+                              na.rm = TRUE)
+  max             <- max[is.na(max) == FALSE]
+  #From Hocke K. 1998
+  a   <- (sqrt(2/nt) * (cos.ott %*% hdev)) / (((cos.ott^2) %*% ones.t)^(1/2))
+  b   <- (sqrt(2/nt) * (sin.ott %*% hdev)) / (((sin.ott^2) %*% ones.t)^(1/2))
+  phi <- -atan2(b,a)
+  P   <- 1 - ((1 - exp(-z[, 1]))^number.ind.freq)
+  res <- list(cyc_range = sqrt(z[, 1] * 2 * hvar / (nt / 2)),
+              freq      = f,
+              f.max     = f[max],
+              per.max   = 1 / f[max],
+              phase     = phi,
+              p         = P,
+              tau       = tau)
+  class(res) <- "lomb"
+  res
+}
