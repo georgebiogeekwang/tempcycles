@@ -111,6 +111,8 @@ gen_cycling_rec <- function(timebase   = NULL,
 #'  tropical_lomb <- spec_lomb_phase(tropical$temperature,
 #'                                  tropical$jday)
 #'  tropical_lomb
+#' @export
+#'
 spec_lomb_phase <- function (temperature = stop("Temperatures missing"),
                              timebase    = stop("Julian days missing"),
                              freq = c(1, 1 / 365.25)) {
